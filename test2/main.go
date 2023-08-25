@@ -13,7 +13,6 @@ import (
 var upgrader = websocket.Upgrader{}
 
 type Message struct {
-	// Unix time
 	Timestamp string `json:"timestamp"`
 	Body      string `json:"body"`
 }
