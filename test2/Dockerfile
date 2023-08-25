@@ -5,8 +5,6 @@ WORKDIR /app
 RUN apt update && apt install -y curl librocksdb7.8 librocksdb-dev
 COPY . .
 RUN go mod download
-RUN go test && rm -rf db
 RUN go build -o main main.go
 EXPOSE 8080
 CMD [ "/bin/bash" ]
-# CMD [ "/app/main" ]

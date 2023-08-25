@@ -33,7 +33,7 @@ type MessageStore struct {
 }
 
 // Create a new message store
-func NewMessageStore() (*MessageStore, error) {
+func NewMessageStore(file string) (*MessageStore, error) {
 	bbto := grocksdb.NewDefaultBlockBasedTableOptions()
 	bbto.SetBlockCache(grocksdb.NewLRUCache(3 << 30))
 
@@ -41,7 +41,7 @@ func NewMessageStore() (*MessageStore, error) {
 	opts.SetBlockBasedTableFactory(bbto)
 	opts.SetCreateIfMissing(true)
 
-	db, err := grocksdb.OpenDb(opts, "/app/db")
+	db, err := grocksdb.OpenDb(opts, "/app/" + file)
 
 	if err != nil {
 		log.Println("Error opening DB", err)
@@ -110,7 +110,7 @@ func (ms *MessageStore) GetMessages(fromTimestamp string, num int) ([]Message, e
 func main() {
 
 	log.Println("Setting up data store...")
-	store, err := NewMessageStore()
+	store, err := NewMessageStore("db")
 	if err != nil {
 		log.Println("Error setting up data store")
 		os.Exit(1)
