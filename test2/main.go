@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/linxGnu/grocksdb"
+	"log"
 	"net/http"
 	"os"
 	"time"
-	"log"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -40,7 +40,7 @@ func NewMessageStore(file string) (*MessageStore, error) {
 	opts.SetBlockBasedTableFactory(bbto)
 	opts.SetCreateIfMissing(true)
 
-	db, err := grocksdb.OpenDb(opts, "/app/" + file)
+	db, err := grocksdb.OpenDb(opts, "/app/"+file)
 
 	if err != nil {
 		log.Println("Error opening DB", err)
@@ -82,7 +82,7 @@ func (ms *MessageStore) GetMessages(fromTimestamp string, num int) ([]Message, e
 		it.SeekToLast()
 	} else {
 		it.SeekForPrev([]byte(fromTimestamp))
-		if (it.Valid()) {
+		if it.Valid() {
 			it.Prev()
 		}
 	}
@@ -121,8 +121,8 @@ func main() {
 
 	// Simulate recieving a huge number of messages in bulk
 	go func() {
-		// load a million messages
-		num := 1000000
+		// load a hundred thousand messages
+		num := 100000
 
 		for i := 0; i < num; i++ {
 			past := time.Now().UTC().Add(-1 * time.Hour).Add(-time.Duration(i) * time.Second)
@@ -176,7 +176,7 @@ func main() {
 		for {
 			messages := []Message{}
 			for i := 1; i <= 10; i++ {
-				past := time.Now().UTC().Add(time.Duration(-10 * i) * time.Second)
+				past := time.Now().UTC().Add(time.Duration(-10*i) * time.Second)
 				timestamp := past.Format(time.RFC3339)
 				messages = append(messages, Message{Timestamp: timestamp, Body: "Hello World " + timestamp})
 			}
@@ -220,7 +220,6 @@ func main() {
 			}
 		}()
 
-
 		for {
 			// Handle read request from client or update event from other
 			// go routines
@@ -228,7 +227,7 @@ func main() {
 			case _ = <-readRequests:
 				log.Println("Recieved read request")
 				fromTimestamp := sessionTimestamp
-				if (sessionTimestamp == "") {
+				if sessionTimestamp == "" {
 					fromTimestamp = "now"
 				}
 				messages, err := store.GetMessages(fromTimestamp, 10)
@@ -238,7 +237,7 @@ func main() {
 
 				// Update earliest timestamp
 				if len(messages) > 0 {
-					sessionTimestamp = messages[len(messages) - 1].Timestamp
+					sessionTimestamp = messages[len(messages)-1].Timestamp
 					log.Println("Session timestamp:", sessionTimestamp)
 				}
 

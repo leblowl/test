@@ -1,13 +1,12 @@
 package main
 
 import (
-        "golang.org/x/exp/slices"
-	"testing"
-	"time"
+	"golang.org/x/exp/slices"
 	"reflect"
 	"strings"
+	"testing"
+	"time"
 )
-
 
 func TestAddGetMessages(t *testing.T) {
 
@@ -17,17 +16,17 @@ func TestAddGetMessages(t *testing.T) {
 	}
 	defer store.DB.Close()
 
-
 	messages := []Message{}
+	startTime := time.Now().UTC()
 	num := 4
 
-	timestampDesc := func (a Message, b Message) int {
+	timestampDesc := func(a Message, b Message) int {
 		return strings.Compare(b.Timestamp, a.Timestamp)
 	}
 
 	for i := 0; i < num; i++ {
-		now := time.Now().UTC().Add(time.Duration(i) * time.Second)
-		timestamp := now.Format(time.RFC3339)
+		msgTime := startTime.Add(time.Duration(i) * time.Second)
+		timestamp := msgTime.Format(time.RFC3339)
 		messages = append(messages, Message{Timestamp: timestamp, Body: "Hello World " + timestamp})
 	}
 	if slices.IsSortedFunc(messages, timestampDesc) {
@@ -62,11 +61,12 @@ func TestAddGetMessagesMillion(t *testing.T) {
 	defer store.DB.Close()
 
 	messages := []Message{}
+	startTime := time.Now().UTC()
 	num := 1000000
 
 	for i := 0; i < num; i++ {
-		now := time.Now().UTC().Add(-time.Duration(i) * time.Second)
-		timestamp := now.Format(time.RFC3339)
+		msgTime := startTime.Add(-time.Duration(i) * time.Second)
+		timestamp := msgTime.Format(time.RFC3339)
 		messages = append(messages, Message{Timestamp: timestamp, Body: "Hello World " + timestamp})
 	}
 
@@ -97,11 +97,12 @@ func TestAddGetMessagesLimit(t *testing.T) {
 	defer store.DB.Close()
 
 	messages := []Message{}
+	startTime := time.Now().UTC()
 	num := 5
 
 	for i := 0; i < num; i++ {
-		now := time.Now().UTC().Add(-time.Duration(i) * time.Second)
-		timestamp := now.Format(time.RFC3339)
+		msgTime := startTime.Add(-time.Duration(i) * time.Second)
+		timestamp := msgTime.Format(time.RFC3339)
 		messages = append(messages, Message{Timestamp: timestamp, Body: "Hello World " + timestamp})
 	}
 
@@ -110,7 +111,7 @@ func TestAddGetMessagesLimit(t *testing.T) {
 		t.Error("Error putting data into DB")
 	}
 
-	got, err := store.GetMessages("now", num - 2)
+	got, err := store.GetMessages("now", num-2)
 	if err != nil {
 		t.Error("Error retrieving data from DB")
 	}
