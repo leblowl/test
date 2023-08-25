@@ -4,8 +4,8 @@
 ```bash
 docker build -t test2 .
 docker run -p 8080:8080 --rm -it test2
-> go test -p 1 -v; rm -rf db_test*
-> /app/main; rm -rf db
+> go test -p 1 -v; rm -r db_test*
+> /app/main; rm -r db
 ```
 
 ------
