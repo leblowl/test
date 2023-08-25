@@ -275,10 +275,6 @@ func main() {
 					}
 					log.Println("Push event", pushMessages)
 				}
-			default:
-				// TODO: Better alternative than sleep?
-				// Perhaps a general notify channel that we block on?
-				time.Sleep(5 * time.Millisecond)
 			}
 		}
 	})
